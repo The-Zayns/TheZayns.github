@@ -58,4 +58,10 @@ class AuthenticatorTests: XCTestCase {
                                                               biometryType: .faceID), .faceId)
     }
 
+    func testAuthenticationTypeReturnsTouchIDWhenBiometryTypeIsTouchID() {
+        XCTAssertEqual(PasswordPreferences.authenticationType(hasAuthentication: true,
+                                                              hasBiometricAuthentication: true,
+                                                              biometryType: .touchID), .touchId)
+    }
+
 }

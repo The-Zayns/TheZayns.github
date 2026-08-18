@@ -59,14 +59,10 @@ class PasswordPreferences {
             return .passcode
         }
 
-        if #available(iOS 11.0, *) {
-            return biometryType == .faceID ? .faceId : .touchId
-        }
-
-        return .touchId
+        return biometryType == .faceID ? .faceId : .touchId
     }
 
-    /* This method returns what biometric authentiacation type set on user's device.
+    /* This method returns what biometric authentication type set on user's device.
     canEvaluatePolicy should be called before getting the biometryType.
     */
     static func evaluatedAuthenticationType() -> AuthenticationType {
