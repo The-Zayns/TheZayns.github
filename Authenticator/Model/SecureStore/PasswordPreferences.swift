@@ -18,7 +18,7 @@ import Foundation
 import LocalAuthentication
 import OSLog
 
-enum AuthenticationType {
+enum AuthenticationType: Equatable {
     case touchId
     case faceId
     case passcode
@@ -50,6 +50,22 @@ enum PasswordSaveType: Int {
  */
 class PasswordPreferences {
 
+    static func authenticationType(hasAuthentication: Bool, hasBiometricAuthentication: Bool, biometryType: LABiometryType) -> AuthenticationType {
+        guard hasAuthentication else {
+            return .none
+        }
+
+        guard hasBiometricAuthentication else {
+            return .passcode
+        }
+
+        if #available(iOS 11.0, *) {
+            return biometryType == .faceID ? .faceId : .touchId
+        }
+
+        return .touchId
+    }
+
     /* This method returns what biometric authentiacation type set on user's device.
     canEvaluatePolicy should be called before getting the biometryType.
     */
@@ -69,19 +85,9 @@ class PasswordPreferences {
             Logger.system.error("PasswordPreferences, biometric policy error: \(String(describing: error.localizedDescription))")
         }
         
-        if !hasAuthentication {
-            return .none
-        }
-
-        if !hasBiometricAuthentication {
-            return .none
-        }
-        
-        if #available(iOS 11.0, *) {
-            return context.biometryType == .faceID ? .faceId : .touchId
-        }
-
-        return .touchId
+        return authenticationType(hasAuthentication: hasAuthentication,
+                                  hasBiometricAuthentication: hasBiometricAuthentication,
+                                  biometryType: context.biometryType)
     }
     
     func migrate(fromKeyIdentifier: String, toKeyIdentifier: String) {

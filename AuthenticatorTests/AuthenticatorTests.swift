@@ -15,6 +15,7 @@
  */
 
 import XCTest
+import LocalAuthentication
 @testable import Authenticator
 
 class AuthenticatorTests: XCTestCase {
@@ -37,6 +38,24 @@ class AuthenticatorTests: XCTestCase {
         self.measure {
             // Put the code you want to measure the time of here.
         }
+    }
+
+    func testAuthenticationTypeReturnsPasscodeWhenOnlyDeviceAuthenticationIsAvailable() {
+        XCTAssertEqual(PasswordPreferences.authenticationType(hasAuthentication: true,
+                                                              hasBiometricAuthentication: false,
+                                                              biometryType: .none), .passcode)
+    }
+
+    func testAuthenticationTypeReturnsNoneWhenAuthenticationIsUnavailable() {
+        XCTAssertEqual(PasswordPreferences.authenticationType(hasAuthentication: false,
+                                                              hasBiometricAuthentication: false,
+                                                              biometryType: .none), .none)
+    }
+
+    func testAuthenticationTypeReturnsFaceIDWhenBiometryTypeIsFaceID() {
+        XCTAssertEqual(PasswordPreferences.authenticationType(hasAuthentication: true,
+                                                              hasBiometricAuthentication: true,
+                                                              biometryType: .faceID), .faceId)
     }
 
 }
